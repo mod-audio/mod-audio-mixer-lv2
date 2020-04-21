@@ -8,13 +8,13 @@
 # --------------------------------------------------------------
 # Project name, used for binaries
 
-NAME = mod-mixer
+NAME = mod-mixer-stereo
 
 # --------------------------------------------------------------
 # Files to build
 
 FILES_DSP  = \
-	mod-mixer.cpp \
+	mod-mixer-stereo.cpp \
 	classes/onepole.cpp \
 	classes/panning.cpp \
 	classes/volumeSlider.cpp \

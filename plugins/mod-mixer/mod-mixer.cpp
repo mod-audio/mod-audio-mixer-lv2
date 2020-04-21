@@ -1,5 +1,4 @@
 #include "mod-mixer.hpp"
-#include <iostream>
 
 START_NAMESPACE_DISTRHO
 
@@ -13,34 +12,45 @@ Mixer::Mixer()
 
     sampleRate = (float)getSampleRate();
 
-    volume1 = 0.5;
-    panning1 = 0.0;
-    solo1 = 0.0;
-    mute1 = 0.0;
-    volume2 = 0.5;
-    panning2 = 0.0;
-    solo2 = 0.0;
-    mute2 = 0.0;
-    volume3 = 0.5;
-    panning3 =0.0;
-    solo3 = 0.0;
-    mute3 = 0.0;
-    volume4 = 0.5;
-    panning4 = 0.0;
-    solo4 = 0.0;
-    mute4 = 0.0;
     masterVolume = 0.5;
 
     mixerChannel = new ChannelStrip*[NUM_CHANNEL_STRIPS];
 
+    sampleRateReductionFactor = 1;
+
     for (unsigned i = 0; i < NUM_CHANNEL_STRIPS; i++) {
-        mixerChannel[i] = new ChannelStrip();
+        volumeParam[i] = 0.5;
+        panningParam[i] = 0.0;
+        soloParam[i] = 0.0;
+        muteParam[i] = 0.0;
+        mixerChannel[i] = new ChannelStrip(sampleRateReductionFactor);
+        mixerChannel[i]->setVolume(0.5);
+        mixerChannel[i]->setPanning(0.5 * 90.0);
+        mixerChannel[i]->setMute(0.0);
     }
 
     sampleL = 0.0;
     sampleR = 0.0;
     sampleAltL = 0.0;
     sampleAltR = 0.0;
+
+    prevMuteParam[0] = 0.0;
+    prevMuteParam[1] = 0.0;
+    prevMuteParam[2] = 0.0;
+    prevMuteParam[3] = 0.0;
+    prevSoloParam[0] = 0.0;
+    prevSoloParam[1] = 0.0;
+    prevSoloParam[2] = 0.0;
+    prevSoloParam[3] = 0.0;
+    prevVolumeParam[0] = 0.5;
+    prevVolumeParam[1] = 0.5;
+    prevVolumeParam[2] = 0.5;
+    prevVolumeParam[3] = 0.5;
+    prevPanningParam[0] = 0.0;
+    prevPanningParam[1] = 0.0;
+    prevPanningParam[2] = 0.0;
+    prevPanningParam[3] = 0.0;
+
 
     reset();
 }
@@ -230,37 +240,37 @@ float Mixer::getParameterValue(uint32_t index) const
     switch (index)
     {
         case paramVolume1:
-            return volume1;
+            return volumeParam[0];
         case paramPanning1:
-            return panning1;
+            return panningParam[0];
         case paramSolo1:
-            return solo1;
+            return soloParam[0];
         case paramMute1:
-            return mute1;
+            return muteParam[0];
         case paramVolume2:
-            return volume2;
+            return volumeParam[1];
         case paramPanning2:
-            return panning2;
+            return panningParam[1];
         case paramSolo2:
-            return solo2;
+            return soloParam[1];
         case paramMute2:
-            return mute2;
+            return muteParam[1];
         case paramVolume3:
-            return volume3;
+            return volumeParam[2];
         case paramPanning3:
-            return panning3;
+            return panningParam[2];
         case paramSolo3:
-            return solo3;
+            return soloParam[2];
         case paramMute3:
-            return mute3;
+            return muteParam[2];
         case paramVolume4:
-            return volume4;
+            return volumeParam[3];
         case paramPanning4:
-            return panning4;
+            return panningParam[3];
         case paramSolo4:
-            return solo4;
+            return soloParam[3];
         case paramMute4:
-            return mute4;
+            return muteParam[3];
         case paramMasterVolume:
             return masterVolume;
     }
@@ -271,52 +281,52 @@ void Mixer::setParameterValue(uint32_t index, float value)
     switch (index)
     {
         case paramVolume1:
-            volume1 = value;
+            volumeParam[0] = value;
             break;
         case paramPanning1:
-            panning1 = value;
+            panningParam[0] = value;
             break;
         case paramSolo1:
-            solo1 = value;
+            soloParam[0] = value;
             break;
         case paramMute1:
-            mute1 = value;
+            muteParam[0] = value;
             break;
         case paramVolume2:
-            volume2 = value;
+            volumeParam[1] = value;
             break;
         case paramPanning2:
-            panning2 = value;
+            panningParam[1] = value;
             break;
         case paramSolo2:
-            solo2 = value;
+            soloParam[1] = value;
             break;
         case paramMute2:
-            mute2 = value;
+            muteParam[1] = value;
             break;
         case paramVolume3:
-            volume3 = value;
+            volumeParam[2] = value;
             break;
         case paramPanning3:
-            panning3 = value;
+            panningParam[2] = value;
             break;
         case paramSolo3:
-            solo3 = value;
+            soloParam[2] = value;
             break;
         case paramMute3:
-            mute3 = value;
+            muteParam[2] = value;
             break;
         case paramVolume4:
-            volume4 = value;
+            volumeParam[3] = value;
             break;
         case paramPanning4:
-            panning4 = value;
+            panningParam[3] = value;
             break;
         case paramSolo4:
-            solo4 = value;
+            soloParam[3] = value;
             break;
         case paramMute4:
-            mute4 = value;
+            muteParam[3] = value;
             break;
         case paramMasterVolume:
             masterVolume = value;
@@ -364,32 +374,25 @@ void Mixer::channelHandler()
 
 void Mixer::run(const float** inputs, float** outputs, uint32_t frames)
 {
-    muteParam[0] = mute1;
-    muteParam[1] = mute2;
-    muteParam[2] = mute3;
-    muteParam[3] = mute4;
-    soloParam[0] = solo1;
-    soloParam[1] = solo2;
-    soloParam[2] = solo3;
-    soloParam[3] = solo4;
-    volumeParam[0] = volume1;
-    volumeParam[1] = volume2;
-    volumeParam[2] = volume3;
-    volumeParam[3] = volume4;
-    panningParam[0] = panning1;
-    panningParam[1] = panning2;
-    panningParam[2] = panning3;
-    panningParam[3] = panning4;
-
     channelHandler();
 
     // Main processing body
     for (uint32_t f = 0; f < frames; ++f)
     {
-        for (unsigned c = 0; c < NUM_CHANNEL_STRIPS; c++) {
-            mixerChannel[c]->setVolume(volumeParam[c]);
-            mixerChannel[c]->setPanning(panningParam[c] * 0.768);
-            mixerChannel[c]->setMute(muteParam[c]);
+        for (unsigned c = 0; c < NUM_CHANNEL_STRIPS; c++) 
+        {
+            if (volumeParam[c] != prevVolumeParam[c]) {
+                mixerChannel[c]->setVolume(volumeParam[c]);
+                prevVolumeParam[c] = volumeParam[c];
+            }
+            if (panningParam[c] != prevPanningParam[c]) {
+                mixerChannel[c]->setPanning(((panningParam[c] * 0.5) + 0.5) * 90.0);
+                prevPanningParam[c] = panningParam[c];
+            }
+            if (muteParam[c] != prevMuteParam[c]) {
+                mixerChannel[c]->setMute(muteParam[c]);
+                prevMuteParam[c] = muteParam[c];
+            }
 
             mixerChannel[c]->process(inputs[c][f]);
 
@@ -397,7 +400,6 @@ void Mixer::run(const float** inputs, float** outputs, uint32_t frames)
             sampleR += mixerChannel[c]->getSample(1);
             sampleAltL += mixerChannel[c]->getSample(2);
             sampleAltR += mixerChannel[c]->getSample(3);
-
         }
 
         outputs[0][f] = sampleL;

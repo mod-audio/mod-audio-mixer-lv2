@@ -1,5 +1,8 @@
 #include "panning.hpp"
 
+#define PI 3.14159265
+#define PI_OVER_TWO 1.570796325
+#define PI_OVER_HUNDREDEIGHTY 0.017453292500000002
 
 Panning::Panning()
 {
@@ -14,12 +17,23 @@ Panning::~Panning()
 void Panning::setAngle(float angle)
 {
     this->angle = angle;
+    calcPanning(angle);
 }
 
-void Panning::process(float sample)
+float Panning::calcSin(float angle)
 {
-    samples[0] = sqrt(2)/2.0 * (cos(angle) - sin(angle)) * sample;
-    samples[1] = sqrt(2)/2.0 * (cos(angle) + sin(angle)) * sample;
+    return angle - pow(angle, 3)/6 + pow(angle, 5)/120 - pow(angle, 7)/5040 + pow(angle, 9)/362880;
+}
+
+void Panning::calcPanning(float angle)
+{
+    panningCoef[0] = calcSin(angle*PI_OVER_HUNDREDEIGHTY + PI_OVER_TWO);
+    panningCoef[1] = calcSin(angle*PI_OVER_HUNDREDEIGHTY);
+}
+
+void Panning::process(float sample, int channel)
+{
+    samples[channel] = panningCoef[channel] * sample;
 }
 
 float Panning::getSample(int channel)

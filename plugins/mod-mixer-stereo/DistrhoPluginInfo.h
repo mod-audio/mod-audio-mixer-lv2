@@ -6,13 +6,13 @@
 #define DISTRHO_PLUGIN_INFO_H_INCLUDED
 
 #define DISTRHO_PLUGIN_BRAND "MOD"
-#define DISTRHO_PLUGIN_NAME  "Mixer"
-#define DISTRHO_PLUGIN_URI   "http://moddevices.com/plugins/mod-devel/mixer"
+#define DISTRHO_PLUGIN_NAME  "Mixer Stereo"
+#define DISTRHO_PLUGIN_URI   "http://moddevices.com/plugins/mod-devel/mixer-stereo"
 
 #define DISTRHO_PLUGIN_HAS_UI        0
 #define DISTRHO_PLUGIN_IS_RT_SAFE    1
 
-#define DISTRHO_PLUGIN_NUM_INPUTS    4
+#define DISTRHO_PLUGIN_NUM_INPUTS    8
 #define DISTRHO_PLUGIN_NUM_OUTPUTS   4
 
 #define DISTRHO_PLUGIN_WANT_TIMEPOS  0

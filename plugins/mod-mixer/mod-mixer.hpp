@@ -105,30 +105,18 @@ private:
     float soloParam[NUM_CHANNEL_STRIPS];
     float volumeParam[NUM_CHANNEL_STRIPS];
     float panningParam[NUM_CHANNEL_STRIPS];
+    float prevMuteParam[NUM_CHANNEL_STRIPS];
+    float prevSoloParam[NUM_CHANNEL_STRIPS];
+    float prevVolumeParam[NUM_CHANNEL_STRIPS];
+    float prevPanningParam[NUM_CHANNEL_STRIPS];
     float sampleRate;
     float sampleL;
     float sampleR;
     float sampleAltL;
     float sampleAltR;
-
-    //parameters
-    float volume1;
-    float panning1;
-    float solo1;
-    float mute1;
-    float volume2;
-    float panning2;
-    float solo2;
-    float mute2;
-    float volume3;
-    float panning3;
-    float solo3;
-    float mute3;
-    float volume4;
-    float panning4;
-    float solo4;
-    float mute4;
     float masterVolume;
+
+    int sampleRateReductionFactor;
 
     void reset();
 

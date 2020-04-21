@@ -7,7 +7,7 @@
 
 class ChannelStrip {
 public:
-    ChannelStrip();
+    ChannelStrip(int channel);
     ~ChannelStrip();
     void setVolume(float level);
     void setMute(float level);
@@ -19,10 +19,12 @@ private:
     float sample_channel;
     float gain;
     float alt_gain;
-    float smooth_gain;
+    float smooth_gain = 0.0;
     float volume_level;
     float mute_level;
+    float prev_mute_level = 0.0;
     float panning_level;
+    int channel;
 
     VolumeSlider volumeSlider;
     Panning panner;

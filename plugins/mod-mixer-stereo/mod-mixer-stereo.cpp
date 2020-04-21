@@ -1,4 +1,4 @@
-#include "mod-mixer.hpp"
+#include "mod-mixer-stereo.hpp"
 #include <iostream>
 
 START_NAMESPACE_DISTRHO
@@ -33,8 +33,10 @@ Mixer::Mixer()
 
     mixerChannel = new ChannelStrip*[NUM_CHANNEL_STRIPS];
 
+    int channel = 0;
     for (unsigned i = 0; i < NUM_CHANNEL_STRIPS; i++) {
-        mixerChannel[i] = new ChannelStrip();
+        mixerChannel[i] = new ChannelStrip(channel);
+        channel ^= 1;
     }
 
     sampleL = 0.0;
@@ -77,7 +79,7 @@ void Mixer::initParameter(uint32_t index, Parameter& parameter)
             parameter.ranges.max = 1.f;
             break;
         case paramSolo1:
-            parameter.hints      = kParameterIsAutomable;
+            parameter.hints      = kParameterIsAutomable | kParameterIsBoolean;
             parameter.name       = "Solo1";
             parameter.symbol     = "Solo1";
             parameter.unit       = "";
@@ -86,7 +88,7 @@ void Mixer::initParameter(uint32_t index, Parameter& parameter)
             parameter.ranges.max = 1.f;
             break;
         case paramMute1:
-            parameter.hints      = kParameterIsAutomable;
+            parameter.hints      = kParameterIsAutomable | kParameterIsBoolean;
             parameter.name       = "Mute1";
             parameter.symbol     = "Mute1";
             parameter.unit       = "";
@@ -113,7 +115,7 @@ void Mixer::initParameter(uint32_t index, Parameter& parameter)
             parameter.ranges.max = 1.f;
             break;
         case paramSolo2:
-            parameter.hints      = kParameterIsAutomable;
+            parameter.hints      = kParameterIsAutomable | kParameterIsBoolean;
             parameter.name       = "Solo2";
             parameter.symbol     = "Solo2";
             parameter.unit       = "";
@@ -122,7 +124,7 @@ void Mixer::initParameter(uint32_t index, Parameter& parameter)
             parameter.ranges.max = 1.f;
             break;
         case paramMute2:
-            parameter.hints      = kParameterIsAutomable;
+            parameter.hints      = kParameterIsAutomable | kParameterIsBoolean;
             parameter.name       = "Mute2";
             parameter.symbol     = "Mute2";
             parameter.unit       = "";
@@ -149,7 +151,7 @@ void Mixer::initParameter(uint32_t index, Parameter& parameter)
             parameter.ranges.max = 1.f;
             break;
         case paramSolo3:
-            parameter.hints      = kParameterIsAutomable;
+            parameter.hints      = kParameterIsAutomable | kParameterIsBoolean;
             parameter.name       = "Solo3";
             parameter.symbol     = "Solo3";
             parameter.unit       = "";
@@ -158,7 +160,7 @@ void Mixer::initParameter(uint32_t index, Parameter& parameter)
             parameter.ranges.max = 1.f;
             break;
         case paramMute3:
-            parameter.hints      = kParameterIsAutomable;
+            parameter.hints      = kParameterIsAutomable | kParameterIsBoolean;
             parameter.name       = "Mute3";
             parameter.symbol     = "Mute3";
             parameter.unit       = "";
@@ -185,7 +187,7 @@ void Mixer::initParameter(uint32_t index, Parameter& parameter)
             parameter.ranges.max = 1.f;
             break;
         case paramSolo4:
-            parameter.hints      = kParameterIsAutomable;
+            parameter.hints      = kParameterIsAutomable | kParameterIsBoolean;
             parameter.name       = "Solo4";
             parameter.symbol     = "Solo4";
             parameter.unit       = "";
@@ -194,7 +196,7 @@ void Mixer::initParameter(uint32_t index, Parameter& parameter)
             parameter.ranges.max = 1.f;
             break;
         case paramMute4:
-            parameter.hints      = kParameterIsAutomable;
+            parameter.hints      = kParameterIsAutomable | kParameterIsBoolean;
             parameter.name       = "Mute4";
             parameter.symbol     = "Mute4";
             parameter.unit       = "";
