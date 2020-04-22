@@ -1,6 +1,6 @@
 #include "channelStrip.hpp"
 
-ChannelStrip::ChannelStrip(int channel)
+ChannelStrip::ChannelStrip(int reduction)
 {
     sample_channel = 0.0;
     gain = 0.0;
@@ -10,10 +10,8 @@ ChannelStrip::ChannelStrip(int channel)
     mute_level = 0.0;
     panning_level = 0.0;
 
-    this->channel = channel;
-
-    onepole1.setFc(10.0/48000.0);
-    onepole2.setFc(10.0/48000.0);
+    onepole1.setFc(10.0/(48000.0/(float)reduction));
+    onepole2.setFc(10.0/(48000.0/(float)reduction));
 }
 
 ChannelStrip::~ChannelStrip()
@@ -37,17 +35,8 @@ void ChannelStrip::setPanning(float level)
     panner.setAngle(onepole2.process(panning_level));
 }
 
-
-float ChannelStrip::getSample(int channel)
+void ChannelStrip::updateParameters()
 {
-    return samples[channel];
-}
-
-void ChannelStrip::process(float input)
-{
-
-    float sample = input;
-
     float gain = volumeSlider.getCoef();
 
     if (mute_level == 1.0) {
@@ -60,11 +49,21 @@ void ChannelStrip::process(float input)
     smooth_gain = onepole1.process(gain);
 
     panner.setAngle(onepole2.process(panning_level));
-    panner.process(sample, channel);
+}
 
-    samples[0] = panner.getSample(0) * smooth_gain;
-    samples[1] = panner.getSample(1) * smooth_gain;
-    samples[2] = panner.getSample(0) * alt_gain;
-    samples[3] = panner.getSample(1) * alt_gain;
+float ChannelStrip::getSample(int channel)
+{
+    return samples[channel];
+}
+
+
+void ChannelStrip::process(float input, int channel)
+{
+    float sample = input;
+
+    panner.process(sample);
+
+    samples[channel] = panner.getSample(channel) * smooth_gain;
+    samples[2 + channel] = panner.getSample(channel) * alt_gain;
 }
 

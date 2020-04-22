@@ -10,11 +10,10 @@ public:
     float calcSin(float angle);
     void calcPanning(float angle);
     void setAngle(float angle);
-    void process(float sample, int channel);
+    void process(float sample);
     float getSample(int channel);
 
 private:
-    float panningCoef[2] = {0.0, 0.0};
     float samples[2];
     float angle;
     float left;

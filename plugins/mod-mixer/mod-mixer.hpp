@@ -43,17 +43,17 @@ protected:
 
     const char* getLabel() const noexcept override
     {
-        return "Mixer";
+        return "Mixer Mono";
     }
 
     const char* getDescription() const override
     {
-        return "Transient Mangler";
+        return "";
     }
 
     const char* getMaker() const noexcept override
     {
-        return "CSD";
+        return "MOD";
     }
 
     const char* getHomePage() const override
@@ -68,12 +68,12 @@ protected:
 
     uint32_t getVersion() const noexcept override
     {
-        return d_version(1, 0, 8);
+        return d_version(1, 0, 0);
     }
 
     int64_t getUniqueId() const noexcept override
     {
-        return d_cconst('C', 'S', 'D', 's');
+        return d_cconst('m', 'm', 'x', 'm');
     }
 
     // -------------------------------------------------------------------

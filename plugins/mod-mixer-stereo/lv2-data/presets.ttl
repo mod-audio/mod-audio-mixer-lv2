@@ -1,7 +1,7 @@
 @prefix lv2:   <http://lv2plug.in/ns/lv2core#> .
 @prefix pset:  <http://lv2plug.in/ns/ext/presets#> .
 
-<http://moddevices.com/plugins/mod-devel/mixer-2x2#preset001>
+<http://moddevices.com/plugins/mod-devel/mixer#preset001>
     lv2:port [
         lv2:symbol "Volume1" ;
         pset:value 0.500000 ;

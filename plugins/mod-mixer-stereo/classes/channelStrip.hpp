@@ -7,13 +7,14 @@
 
 class ChannelStrip {
 public:
-    ChannelStrip(int channel);
+    ChannelStrip(int reduction);
     ~ChannelStrip();
     void setVolume(float level);
     void setMute(float level);
     void setPanning(float level);
+    void updateParameters();
     float getSample(int channel);
-    void process(float input);
+    void process(float input, int channel);
 private:
     float samples[4] = {0.0, 0.0, 0.0, 0.0};
     float sample_channel;
@@ -24,7 +25,7 @@ private:
     float mute_level;
     float prev_mute_level = 0.0;
     float panning_level;
-    int channel;
+    int sampleRateReductionFactor = 8;
 
     VolumeSlider volumeSlider;
     Panning panner;

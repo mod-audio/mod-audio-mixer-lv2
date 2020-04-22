@@ -27,13 +27,14 @@ float Panning::calcSin(float angle)
 
 void Panning::calcPanning(float angle)
 {
-    panningCoef[0] = calcSin(angle*PI_OVER_HUNDREDEIGHTY + PI_OVER_TWO);
-    panningCoef[1] = calcSin(angle*PI_OVER_HUNDREDEIGHTY);
+    left = calcSin(angle*PI_OVER_HUNDREDEIGHTY + PI_OVER_TWO);
+    right = calcSin(angle*PI_OVER_HUNDREDEIGHTY);
 }
 
-void Panning::process(float sample, int channel)
+void Panning::process(float sample)
 {
-    samples[channel] = panningCoef[channel] * sample;
+    samples[0] = left * sample;
+    samples[1] = right * sample;
 }
 
 float Panning::getSample(int channel)

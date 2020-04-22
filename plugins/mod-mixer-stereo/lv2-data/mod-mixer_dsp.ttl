@@ -7,7 +7,7 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix unit: <http://lv2plug.in/ns/extensions/units#> .
 
-<http://moddevices.com/plugins/mod-devel/mixer-2x2>
+<http://moddevices.com/plugins/mod-devel/mixer>
     a lv2:Plugin ;
 
     lv2:extensionData opts:interface ,
@@ -26,81 +26,57 @@
     lv2:port [
         a lv2:InputPort, lv2:AudioPort ;
         lv2:index 0 ;
-        lv2:symbol "Channel1_Left" ;
-        lv2:name "Channel1 Left" ;
+        lv2:symbol "lv2_audio_in_1" ;
+        lv2:name "Audio Input 1" ;
     ] ,
     [
         a lv2:InputPort, lv2:AudioPort ;
         lv2:index 1 ;
-        lv2:symbol "Channel1_Right" ;
-        lv2:name "Channel1 Right" ;
+        lv2:symbol "lv2_audio_in_2" ;
+        lv2:name "Audio Input 2" ;
     ] ,
     [
         a lv2:InputPort, lv2:AudioPort ;
         lv2:index 2 ;
-        lv2:symbol "Channel2_Left" ;
-        lv2:name "Channel2 Left" ;
+        lv2:symbol "lv2_audio_in_3" ;
+        lv2:name "Audio Input 3" ;
     ] ,
     [
         a lv2:InputPort, lv2:AudioPort ;
         lv2:index 3 ;
-        lv2:symbol "Channel2_Right" ;
-        lv2:name "Channel2 Right" ;
-    ] ,
-    [
-        a lv2:InputPort, lv2:AudioPort ;
-        lv2:index 4 ;
-        lv2:symbol "Channel3_Left" ;
-        lv2:name "Channel3 Left" ;
-    ] ,
-    [
-        a lv2:InputPort, lv2:AudioPort ;
-        lv2:index 5 ;
-        lv2:symbol "Channel3_Right" ;
-        lv2:name "Channel3 Right" ;
-    ] ,
-    [
-        a lv2:InputPort, lv2:AudioPort ;
-        lv2:index 6 ;
-        lv2:symbol "Channel4_Left" ;
-        lv2:name "Channel4 Left" ;
-    ] ,
-    [
-        a lv2:InputPort, lv2:AudioPort ;
-        lv2:index 7 ;
-        lv2:symbol "Channel4_Right" ;
-        lv2:name "Channel4 Right" ;
+        lv2:symbol "lv2_audio_in_4" ;
+        lv2:name "Audio Input 4" ;
     ] ;
 
     lv2:port [
         a lv2:OutputPort, lv2:AudioPort ;
-        lv2:index 8 ;
-        lv2:symbol "Output_Left" ;
-        lv2:name "Output Left" ;
+        lv2:index 4 ;
+        lv2:symbol "lv2_audio_out_1" ;
+        lv2:name "Audio Output L" ;
     ] ,
     [
         a lv2:OutputPort, lv2:AudioPort ;
-        lv2:index 9 ;
-        lv2:symbol "Output_Right" ;
-        lv2:name "Output Right" ;
+        lv2:index 5 ;
+        lv2:symbol "lv2_audio_out_2" ;
+        lv2:name "Audio Output R" ;
     ] ,
     [
         a lv2:OutputPort, lv2:AudioPort ;
-        lv2:index 10 ;
-        lv2:symbol "Alternative_Left" ;
-        lv2:name "Alternative Left" ;
+        lv2:index 6 ;
+        lv2:symbol "lv2_audio_out_3" ;
+        lv2:name "Alternative Output L" ;
     ] ,
     [
         a lv2:OutputPort, lv2:AudioPort ;
-        lv2:index 11 ;
-        lv2:symbol "Alternative_Right" ;
-        lv2:name "Alternative Right" ;
+        lv2:index 7 ;
+        lv2:symbol "lv2_audio_out_4" ;
+        lv2:name "Alternative Output R" ;
     ] ;
 
     lv2:port [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 12 ;
-        lv2:name """Volume1""" ;
+        lv2:index 8 ;
+        lv2:name """Volume 1""" ;
         lv2:symbol "Volume1" ;
         lv2:default 0.500000 ;
         lv2:minimum 0.000000 ;
@@ -108,8 +84,8 @@
     ] ,
     [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 13 ;
-        lv2:name """Panning1""" ;
+        lv2:index 9 ;
+        lv2:name """Panning 1""" ;
         lv2:symbol "Panning1" ;
         lv2:default 0.000000 ;
         lv2:minimum -1.000000 ;
@@ -117,7 +93,7 @@
     ] ,
     [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 14 ;
+        lv2:index 10 ;
         lv2:name """Solo1""" ;
         lv2:symbol "Solo1" ;
         lv2:default 0.000000 ;
@@ -127,8 +103,8 @@
     ] ,
     [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 15 ;
-        lv2:name """Mute1""" ;
+        lv2:index 11 ;
+        lv2:name """Mute 1""" ;
         lv2:symbol "Mute1" ;
         lv2:default 0.000000 ;
         lv2:minimum 0.000000 ;
@@ -137,8 +113,8 @@
     ] ,
     [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 16 ;
-        lv2:name """Volume2""" ;
+        lv2:index 12 ;
+        lv2:name """Volume 2""" ;
         lv2:symbol "Volume2" ;
         lv2:default 0.500000 ;
         lv2:minimum 0.000000 ;
@@ -146,8 +122,8 @@
     ] ,
     [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 17 ;
-        lv2:name """Panning2""" ;
+        lv2:index 13 ;
+        lv2:name """Panning 2""" ;
         lv2:symbol "Panning2" ;
         lv2:default 0.000000 ;
         lv2:minimum -1.000000 ;
@@ -155,8 +131,8 @@
     ] ,
     [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 18 ;
-        lv2:name """Solo2""" ;
+        lv2:index 14 ;
+        lv2:name """Solo 2""" ;
         lv2:symbol "Solo2" ;
         lv2:default 0.000000 ;
         lv2:minimum 0.000000 ;
@@ -165,8 +141,8 @@
     ] ,
     [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 19 ;
-        lv2:name """Mute2""" ;
+        lv2:index 15 ;
+        lv2:name """Mute 2""" ;
         lv2:symbol "Mute2" ;
         lv2:default 0.000000 ;
         lv2:minimum 0.000000 ;
@@ -175,8 +151,8 @@
     ] ,
     [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 20 ;
-        lv2:name """Volume3""" ;
+        lv2:index 16 ;
+        lv2:name """Volume 3""" ;
         lv2:symbol "Volume3" ;
         lv2:default 0.500000 ;
         lv2:minimum 0.000000 ;
@@ -184,8 +160,8 @@
     ] ,
     [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 21 ;
-        lv2:name """Panning3""" ;
+        lv2:index 17 ;
+        lv2:name """Panning 3""" ;
         lv2:symbol "Panning3" ;
         lv2:default 0.000000 ;
         lv2:minimum -1.000000 ;
@@ -193,8 +169,8 @@
     ] ,
     [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 22 ;
-        lv2:name """Solo3""" ;
+        lv2:index 18 ;
+        lv2:name """Solo 3""" ;
         lv2:symbol "Solo3" ;
         lv2:default 0.000000 ;
         lv2:minimum 0.000000 ;
@@ -203,8 +179,8 @@
     ] ,
     [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 23 ;
-        lv2:name """Mute3""" ;
+        lv2:index 19 ;
+        lv2:name """Mute 3""" ;
         lv2:symbol "Mute3" ;
         lv2:default 0.000000 ;
         lv2:minimum 0.000000 ;
@@ -213,8 +189,8 @@
     ] ,
     [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 24 ;
-        lv2:name """Volume4""" ;
+        lv2:index 20 ;
+        lv2:name """Volume 4""" ;
         lv2:symbol "Volume4" ;
         lv2:default 0.500000 ;
         lv2:minimum 0.000000 ;
@@ -222,17 +198,17 @@
     ] ,
     [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 25 ;
-        lv2:name """Panning4""" ;
+        lv2:index 21 ;
+        lv2:name """Panning 4""" ;
         lv2:symbol "Panning4" ;
         lv2:default 0.000000 ;
-        lv2:minimum -1.000000 ;
+        lv2:minimum 0.000000 ;
         lv2:maximum 1.000000 ;
     ] ,
     [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 26 ;
-        lv2:name """Solo4""" ;
+        lv2:index 22 ;
+        lv2:name """Solo 4""" ;
         lv2:symbol "Solo4" ;
         lv2:default 0.000000 ;
         lv2:minimum 0.000000 ;
@@ -241,8 +217,8 @@
     ] ,
     [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 27 ;
-        lv2:name """Mute4""" ;
+        lv2:index 23 ;
+        lv2:name """Mute 4""" ;
         lv2:symbol "Mute4" ;
         lv2:default 0.000000 ;
         lv2:minimum 0.000000 ;
@@ -251,7 +227,7 @@
     ] ,
     [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 28 ;
+        lv2:index 24 ;
         lv2:name """MasterVolume""" ;
         lv2:symbol "MasterVolume" ;
         lv2:default 0.500000 ;
@@ -262,13 +238,13 @@
     rdfs:comment """Transient Mangler""" ;
 
     mod:brand "MOD" ;
-    mod:label "Mixer-Stereo" ;
+    mod:label "Mixer" ;
 
-    doap:name """Mixer-Stereo""" ;
+    doap:name """Mixer""" ;
     doap:license """Custom""" ;
 
     doap:maintainer [
-        foaf:name """MOD""" ;
+        foaf:name """CSD""" ;
         foaf:homepage <http://> ;
     ] ;
 

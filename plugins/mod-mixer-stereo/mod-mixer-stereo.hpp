@@ -43,17 +43,17 @@ protected:
 
     const char* getLabel() const noexcept override
     {
-        return "Mixer";
+        return "Mixer Stereo";
     }
 
     const char* getDescription() const override
     {
-        return "Transient Mangler";
+        return "";
     }
 
     const char* getMaker() const noexcept override
     {
-        return "CSD";
+        return "MOD";
     }
 
     const char* getHomePage() const override
@@ -73,7 +73,7 @@ protected:
 
     int64_t getUniqueId() const noexcept override
     {
-        return d_cconst('C', 'S', 'D', 's');
+        return d_cconst('M', 'A', 'M', 'X');
     }
 
     // -------------------------------------------------------------------
@@ -105,30 +105,18 @@ private:
     float soloParam[NUM_CHANNEL_STRIPS];
     float volumeParam[NUM_CHANNEL_STRIPS];
     float panningParam[NUM_CHANNEL_STRIPS];
+    float prevMuteParam[NUM_CHANNEL_STRIPS];
+    float prevSoloParam[NUM_CHANNEL_STRIPS];
+    float prevVolumeParam[NUM_CHANNEL_STRIPS];
+    float prevPanningParam[NUM_CHANNEL_STRIPS];
     float sampleRate;
     float sampleL;
     float sampleR;
     float sampleAltL;
     float sampleAltR;
-
-    //parameters
-    float volume1;
-    float panning1;
-    float solo1;
-    float mute1;
-    float volume2;
-    float panning2;
-    float solo2;
-    float mute2;
-    float volume3;
-    float panning3;
-    float solo3;
-    float mute3;
-    float volume4;
-    float panning4;
-    float solo4;
-    float mute4;
     float masterVolume;
+
+    int sampleRateReductionFactor;
 
     void reset();
 
