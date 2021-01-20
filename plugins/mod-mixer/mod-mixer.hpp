@@ -3,6 +3,8 @@
 
 #include "DistrhoPlugin.hpp"
 #include "classes/channelStrip.hpp"
+#include "classes/volumeSlider.hpp"
+#include "classes/onepole.hpp"
 
 #define NUM_CHANNELS 2
 #define NUM_CHANNEL_STRIPS 4
@@ -31,6 +33,7 @@ public:
         paramSolo4,
         paramMute4,
         paramMasterVolume,
+        paramPluginEnabled,
         paramCount
     };
 
@@ -100,6 +103,8 @@ protected:
 private:
 
     ChannelStrip **mixerChannel;
+    VolumeSlider masterSlider;
+    OnePole      onepole;
 
     float muteParam[NUM_CHANNEL_STRIPS];
     float soloParam[NUM_CHANNEL_STRIPS];
@@ -115,6 +120,7 @@ private:
     float sampleAltL;
     float sampleAltR;
     float masterVolume;
+    bool pluginEnabled;
 
     int sampleRateReductionFactor;
 

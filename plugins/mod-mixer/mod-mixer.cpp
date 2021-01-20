@@ -10,9 +10,12 @@ Mixer::Mixer()
 {
     loadProgram(0);
 
+    pluginEnabled = true;
     sampleRate = (float)getSampleRate();
 
     masterVolume = 0.5;
+    masterSlider.setCoef(masterVolume);
+    onepole.setFc(10.0/48000.0);
 
     mixerChannel = new ChannelStrip*[NUM_CHANNEL_STRIPS];
 
@@ -190,8 +193,8 @@ void Mixer::initParameter(uint32_t index, Parameter& parameter)
             parameter.name       = "Panning4";
             parameter.symbol     = "Panning4";
             parameter.unit       = "";
-            parameter.ranges.def = -1.0f;
-            parameter.ranges.min = 0.0f;
+            parameter.ranges.def = 0.0f;
+            parameter.ranges.min = -1.0f;
             parameter.ranges.max = 1.f;
             break;
         case paramSolo4:
@@ -218,6 +221,15 @@ void Mixer::initParameter(uint32_t index, Parameter& parameter)
             parameter.symbol     = "MasterVolume";
             parameter.unit       = "";
             parameter.ranges.def = 0.0f;
+            parameter.ranges.min = 0.0f;
+            parameter.ranges.max = 1.f;
+            break;
+        case paramPluginEnabled:
+            parameter.hints      = kParameterIsAutomable;
+            parameter.name       = "PluginEnabled";
+            parameter.symbol     = "PluginEnabled";
+            parameter.unit       = "";
+            parameter.ranges.def = 1.0f;
             parameter.ranges.min = 0.0f;
             parameter.ranges.max = 1.f;
             break;
@@ -273,6 +285,8 @@ float Mixer::getParameterValue(uint32_t index) const
             return muteParam[3];
         case paramMasterVolume:
             return masterVolume;
+        case paramPluginEnabled:
+            return pluginEnabled;
     }
 }
 
@@ -330,6 +344,10 @@ void Mixer::setParameterValue(uint32_t index, float value)
             break;
         case paramMasterVolume:
             masterVolume = value;
+            masterSlider.setCoef(masterVolume);
+            break;
+        case paramPluginEnabled:
+            pluginEnabled = value;
             break;
     }
 }
@@ -358,16 +376,24 @@ void Mixer::channelHandler()
     bool solo_found = false;
     int params_checked = 0;
 
-    while(!solo_found && params_checked < NUM_CHANNEL_STRIPS)
+    while(params_checked < NUM_CHANNEL_STRIPS)
     {
         if (soloParam[params_checked] == 1) {
             for (unsigned s = 0; s < NUM_CHANNEL_STRIPS; s++) {
                 if (soloParam[s] != 1) {
-                    muteParam[s] = 1;
+                    mixerChannel[s]->setMute(1);
+                } else {
+                    mixerChannel[s]->setMute(0);
                 }
             }
+            solo_found = true;
         }
         params_checked++;
+    }
+    if (!solo_found) {
+        for (unsigned s = 0; s < NUM_CHANNEL_STRIPS; s++) {
+            mixerChannel[s]->setMute(muteParam[s]);
+        }
     }
 }
 
@@ -379,7 +405,7 @@ void Mixer::run(const float** inputs, float** outputs, uint32_t frames)
     // Main processing body
     for (uint32_t f = 0; f < frames; ++f)
     {
-        for (unsigned c = 0; c < NUM_CHANNEL_STRIPS; c++) 
+        for (unsigned c = 0; c < NUM_CHANNEL_STRIPS; c++)
         {
             if (volumeParam[c] != prevVolumeParam[c]) {
                 mixerChannel[c]->setVolume(volumeParam[c]);
@@ -402,10 +428,13 @@ void Mixer::run(const float** inputs, float** outputs, uint32_t frames)
             sampleAltR += mixerChannel[c]->getSample(3);
         }
 
-        outputs[0][f] = sampleL;
-        outputs[1][f] = sampleR;
-        outputs[2][f] = sampleAltL;
-        outputs[3][f] = sampleAltR;
+        float volumeCoef = (pluginEnabled) ? masterSlider.getCoef() : 0.0;
+        float masterGain = onepole.process(volumeCoef);
+
+        outputs[0][f] = masterGain * sampleL;
+        outputs[1][f] = masterGain * sampleR;
+        outputs[2][f] = masterGain * sampleAltL;
+        outputs[3][f] = masterGain * sampleAltR;
 
         sampleL = 0.0;
         sampleR = 0.0;
