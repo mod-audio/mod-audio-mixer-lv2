@@ -12,9 +12,8 @@ public:
     void setVolume(float level);
     void setMute(float level);
     void setPanning(float level);
-    void updateParameters();
     float getSample(int channel);
-    void process(float input, int channel);
+    void process(float input);
 private:
     float samples[4] = {0.0, 0.0, 0.0, 0.0};
     float sample_channel;

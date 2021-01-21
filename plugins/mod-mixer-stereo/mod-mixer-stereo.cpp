@@ -1,4 +1,5 @@
 #include "mod-mixer-stereo.hpp"
+#include <iostream>
 
 START_NAMESPACE_DISTRHO
 
@@ -6,13 +7,15 @@ START_NAMESPACE_DISTRHO
 // -----------------------------------------------------------------------
 
 Mixer::Mixer()
-    : Plugin(paramCount, 1, 0) // 1 program, 0 states
+    : Plugin(paramCount, 0, 0) // 1 program, 0 states
 {
-    loadProgram(0);
-
+    pluginEnabled = true;
+    truePanning = true;
     sampleRate = (float)getSampleRate();
 
     masterVolume = 0.5;
+    masterSlider.setCoef(masterVolume);
+    onepole.setFc(10.0/48000.0);
 
     mixerChannel = new ChannelStrip*[NUM_CHANNEL_STRIPS];
 
@@ -51,7 +54,6 @@ Mixer::Mixer()
     prevPanningParam[2] = 0.0;
     prevPanningParam[3] = 0.0;
 
-
     reset();
 }
 
@@ -87,7 +89,7 @@ void Mixer::initParameter(uint32_t index, Parameter& parameter)
             parameter.ranges.max = 1.f;
             break;
         case paramSolo1:
-            parameter.hints      = kParameterIsAutomable;
+            parameter.hints      = kParameterIsAutomable | kParameterIsBoolean;
             parameter.name       = "Solo1";
             parameter.symbol     = "Solo1";
             parameter.unit       = "";
@@ -96,7 +98,7 @@ void Mixer::initParameter(uint32_t index, Parameter& parameter)
             parameter.ranges.max = 1.f;
             break;
         case paramMute1:
-            parameter.hints      = kParameterIsAutomable;
+            parameter.hints      = kParameterIsAutomable | kParameterIsBoolean;
             parameter.name       = "Mute1";
             parameter.symbol     = "Mute1";
             parameter.unit       = "";
@@ -123,7 +125,7 @@ void Mixer::initParameter(uint32_t index, Parameter& parameter)
             parameter.ranges.max = 1.f;
             break;
         case paramSolo2:
-            parameter.hints      = kParameterIsAutomable;
+            parameter.hints      = kParameterIsAutomable | kParameterIsBoolean;
             parameter.name       = "Solo2";
             parameter.symbol     = "Solo2";
             parameter.unit       = "";
@@ -132,7 +134,7 @@ void Mixer::initParameter(uint32_t index, Parameter& parameter)
             parameter.ranges.max = 1.f;
             break;
         case paramMute2:
-            parameter.hints      = kParameterIsAutomable;
+            parameter.hints      = kParameterIsAutomable | kParameterIsBoolean;
             parameter.name       = "Mute2";
             parameter.symbol     = "Mute2";
             parameter.unit       = "";
@@ -159,7 +161,7 @@ void Mixer::initParameter(uint32_t index, Parameter& parameter)
             parameter.ranges.max = 1.f;
             break;
         case paramSolo3:
-            parameter.hints      = kParameterIsAutomable;
+            parameter.hints      = kParameterIsAutomable | kParameterIsBoolean;
             parameter.name       = "Solo3";
             parameter.symbol     = "Solo3";
             parameter.unit       = "";
@@ -168,7 +170,7 @@ void Mixer::initParameter(uint32_t index, Parameter& parameter)
             parameter.ranges.max = 1.f;
             break;
         case paramMute3:
-            parameter.hints      = kParameterIsAutomable;
+            parameter.hints      = kParameterIsAutomable | kParameterIsBoolean;
             parameter.name       = "Mute3";
             parameter.symbol     = "Mute3";
             parameter.unit       = "";
@@ -190,12 +192,12 @@ void Mixer::initParameter(uint32_t index, Parameter& parameter)
             parameter.name       = "Panning4";
             parameter.symbol     = "Panning4";
             parameter.unit       = "";
-            parameter.ranges.def = -1.0f;
-            parameter.ranges.min = 0.0f;
+            parameter.ranges.def = 0.0f;
+            parameter.ranges.min = -1.0f;
             parameter.ranges.max = 1.f;
             break;
         case paramSolo4:
-            parameter.hints      = kParameterIsAutomable;
+            parameter.hints      = kParameterIsAutomable | kParameterIsBoolean;
             parameter.name       = "Solo4";
             parameter.symbol     = "Solo4";
             parameter.unit       = "";
@@ -204,7 +206,7 @@ void Mixer::initParameter(uint32_t index, Parameter& parameter)
             parameter.ranges.max = 1.f;
             break;
         case paramMute4:
-            parameter.hints      = kParameterIsAutomable;
+            parameter.hints      = kParameterIsAutomable | kParameterIsBoolean;
             parameter.name       = "Mute4";
             parameter.symbol     = "Mute4";
             parameter.unit       = "";
@@ -221,15 +223,25 @@ void Mixer::initParameter(uint32_t index, Parameter& parameter)
             parameter.ranges.min = 0.0f;
             parameter.ranges.max = 1.f;
             break;
+        case paramTruePanning:
+            parameter.hints      = kParameterIsAutomable | kParameterIsBoolean;
+            parameter.name       = "True Panning";
+            parameter.symbol     = "TruePanning";
+            parameter.unit       = "";
+            parameter.ranges.def = 1.0f;
+            parameter.ranges.min = 0.0f;
+            parameter.ranges.max = 1.f;
+            break;
+        case paramPluginEnabled:
+            parameter.hints      = kParameterIsAutomable | kParameterIsBoolean;
+            parameter.name       = "PluginEnabled";
+            parameter.symbol     = "PluginEnabled";
+            parameter.unit       = "";
+            parameter.ranges.def = 1.0f;
+            parameter.ranges.min = 0.0f;
+            parameter.ranges.max = 1.f;
+            break;
     }
-}
-
-void Mixer::initProgramName(uint32_t index, String& programName)
-{
-    if (index != 0)
-        return;
-
-    programName = "Default";
 }
 
 // -----------------------------------------------------------------------
@@ -273,6 +285,10 @@ float Mixer::getParameterValue(uint32_t index) const
             return muteParam[3];
         case paramMasterVolume:
             return masterVolume;
+        case paramTruePanning:
+            return truePanning;
+        case paramPluginEnabled:
+            return pluginEnabled;
     }
 }
 
@@ -330,12 +346,15 @@ void Mixer::setParameterValue(uint32_t index, float value)
             break;
         case paramMasterVolume:
             masterVolume = value;
+            masterSlider.setCoef(masterVolume);
+            break;
+        case paramTruePanning:
+            truePanning = (bool)value;
+            break;
+        case paramPluginEnabled:
+            pluginEnabled = value;
             break;
     }
-}
-
-void Mixer::loadProgram(uint32_t index)
-{
 }
 
 void Mixer::reset()
@@ -358,16 +377,31 @@ void Mixer::channelHandler()
     bool solo_found = false;
     int params_checked = 0;
 
-    while(!solo_found && params_checked < NUM_CHANNEL_STRIPS)
+    while(params_checked < NUM_CHANNEL_STRIPS/2)
     {
         if (soloParam[params_checked] == 1) {
-            for (unsigned s = 0; s < NUM_CHANNEL_STRIPS; s++) {
-                if (soloParam[s] != 1) {
-                    muteParam[s] = 1;
+            int paramIndex = 0;
+            for (unsigned s = 0; s < NUM_CHANNEL_STRIPS; s+=NUM_CHANNELS) {
+                if (soloParam[paramIndex] != 1) {
+                    mixerChannel[s]->setMute(1);
+                    mixerChannel[s+1]->setMute(1);
+                } else {
+                    mixerChannel[s]->setMute(0);
+                    mixerChannel[s+1]->setMute(0);
                 }
+                paramIndex++;
             }
+            solo_found = true;
         }
         params_checked++;
+    }
+    if (!solo_found) {
+        int paramIndex = 0;
+        for (unsigned s = 0; s < NUM_CHANNEL_STRIPS; s+=NUM_CHANNELS) {
+            mixerChannel[s]->setMute(muteParam[paramIndex]);
+            mixerChannel[s+1]->setMute(muteParam[paramIndex]);
+            paramIndex++;
+        }
     }
 }
 
@@ -376,38 +410,66 @@ void Mixer::run(const float** inputs, float** outputs, uint32_t frames)
 {
     channelHandler();
 
+    int paramIndex = 0;
+
+    for (unsigned c = 0; c < NUM_CHANNEL_STRIPS; c+=NUM_CHANNELS)
+    {
+        if (volumeParam[paramIndex] != prevVolumeParam[paramIndex]) {
+            mixerChannel[c]->setVolume(volumeParam[paramIndex]);
+            mixerChannel[c+1]->setVolume(volumeParam[paramIndex]);
+            prevVolumeParam[paramIndex] = volumeParam[paramIndex];
+        }
+        if (panningParam[paramIndex] != prevPanningParam[paramIndex]) {
+            float panning_l = (panningParam[paramIndex] >= 0) ? (panningParam[paramIndex] * 2.0) - 1.0 : -1.0;
+            mixerChannel[c]->setPanning(((panning_l * 0.5) + 0.5) * 90.0);
+            float panning_r = (panningParam[paramIndex] <= 0) ? (panningParam[paramIndex] * 2.0) + 1.0 : 1.0;
+            mixerChannel[c+1]->setPanning(((panning_r * 0.5) + 0.5) * 90.0);
+            prevPanningParam[paramIndex] = panningParam[paramIndex];
+        }
+        if (muteParam[paramIndex] != prevMuteParam[paramIndex]) {
+            std::cout << "mixerChannels: " << c << "and " << c+1 << " " << "are set to: " << muteParam[paramIndex] << std::endl;
+            mixerChannel[c]->setMute(muteParam[paramIndex]);
+            mixerChannel[c+1]->setMute(muteParam[paramIndex]);
+            prevMuteParam[paramIndex] = muteParam[paramIndex];
+        }
+        paramIndex++;
+    }
+
     // Main processing body
     for (uint32_t f = 0; f < frames; ++f)
     {
         for (unsigned c = 0; c < NUM_CHANNEL_STRIPS; c++)
         {
-            if (volumeParam[c] != prevVolumeParam[c]) {
-                mixerChannel[c]->setVolume(volumeParam[c]);
-                prevVolumeParam[c] = volumeParam[c];
-            }
-            if (panningParam[c] != prevPanningParam[c]) {
-                mixerChannel[c]->setPanning(((panningParam[c] * 0.5) + 0.5) * 90.0);
-                prevPanningParam[c] = panningParam[c];
-            }
-            if (muteParam[c] != prevMuteParam[c]) {
-                mixerChannel[c]->setMute(muteParam[c]);
-                prevMuteParam[c] = muteParam[c];
-            }
+            mixerChannel[c]->process(inputs[c][f]);
 
-            mixerChannel[c]->updateParameters();
-            mixerChannel[c]->process(inputs[(c * 2)][f], 0);
-            mixerChannel[c]->process(inputs[(c * 2) + 1][f], 1);
+            if (truePanning) {
+                sampleL += mixerChannel[c]->getSample(0);
+                sampleR += mixerChannel[c]->getSample(1);
+                sampleAltL += mixerChannel[c]->getSample(2);
+                sampleAltR += mixerChannel[c]->getSample(3);
+            } else {
+                if (c % 2 == 0) {
+                    sampleL += mixerChannel[c]->getSample(0);
+                    sampleR += 0.0;
+                    sampleAltL += mixerChannel[c]->getSample(2);
+                    sampleAltR += 0.0;
+                } else {
+                    sampleL += 0.0;
+                    sampleR += mixerChannel[c]->getSample(1);
+                    sampleAltL += 0.0;
+                    sampleAltR += mixerChannel[c]->getSample(3);
 
-            sampleL += mixerChannel[c]->getSample(0);
-            sampleR += mixerChannel[c]->getSample(1);
-            sampleAltL += mixerChannel[c]->getSample(2);
-            sampleAltR += mixerChannel[c]->getSample(3);
+                }
+            }
         }
 
-        outputs[0][f] = sampleL;
-        outputs[1][f] = sampleR;
-        outputs[2][f] = sampleAltL;
-        outputs[3][f] = sampleAltR;
+        float volumeCoef = (pluginEnabled) ? masterSlider.getCoef() : 0.0;
+        float masterGain = onepole.process(volumeCoef);
+
+        outputs[0][f] = masterGain * sampleL;
+        outputs[1][f] = masterGain * sampleR;
+        outputs[2][f] = masterGain * sampleAltL;
+        outputs[3][f] = masterGain * sampleAltR;
 
         sampleL = 0.0;
         sampleR = 0.0;

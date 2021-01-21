@@ -3,9 +3,11 @@
 
 #include "DistrhoPlugin.hpp"
 #include "classes/channelStrip.hpp"
+#include "classes/volumeSlider.hpp"
+#include "classes/onepole.hpp"
 
 #define NUM_CHANNELS 2
-#define NUM_CHANNEL_STRIPS 4
+#define NUM_CHANNEL_STRIPS 8
 
 START_NAMESPACE_DISTRHO
 
@@ -31,6 +33,8 @@ public:
         paramSolo4,
         paramMute4,
         paramMasterVolume,
+        paramTruePanning,
+        paramPluginEnabled,
         paramCount
     };
 
@@ -43,7 +47,7 @@ protected:
 
     const char* getLabel() const noexcept override
     {
-        return "Mixer Stereo";
+        return "Mixer Mono";
     }
 
     const char* getDescription() const override
@@ -68,27 +72,23 @@ protected:
 
     uint32_t getVersion() const noexcept override
     {
-        return d_version(1, 0, 8);
+        return d_version(1, 0, 0);
     }
 
     int64_t getUniqueId() const noexcept override
     {
-        return d_cconst('M', 'A', 'M', 'X');
+        return d_cconst('m', 'm', 'x', 'm');
     }
 
     // -------------------------------------------------------------------
     // Init
 
     void initParameter(uint32_t index, Parameter& parameter) override;
-    void initProgramName(uint32_t index, String& programName) override;
-
     // -------------------------------------------------------------------
     // Internal data
 
     float getParameterValue(uint32_t index) const override;
     void  setParameterValue(uint32_t index, float value) override;
-    void  loadProgram(uint32_t index) override;
-
     // -------------------------------------------------------------------
     // Process
     void activate() override;
@@ -100,6 +100,8 @@ protected:
 private:
 
     ChannelStrip **mixerChannel;
+    VolumeSlider masterSlider;
+    OnePole      onepole;
 
     float muteParam[NUM_CHANNEL_STRIPS];
     float soloParam[NUM_CHANNEL_STRIPS];
@@ -115,6 +117,8 @@ private:
     float sampleAltL;
     float sampleAltR;
     float masterVolume;
+    bool pluginEnabled;
+    bool truePanning;
 
     int sampleRateReductionFactor;
 
@@ -128,6 +132,3 @@ private:
 END_NAMESPACE_DISTRHO
 
 #endif  // DISTRHO_PLUGIN_SLPLUGIN_HPP_INCLUDED
-
-
-
