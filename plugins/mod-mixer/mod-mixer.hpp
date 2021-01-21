@@ -2,9 +2,9 @@
 #define DISTRHO_PLUGIN_SLPLUGIN_HPP_INCLUDED
 
 #include "DistrhoPlugin.hpp"
-#include "classes/channelStrip.hpp"
-#include "classes/volumeSlider.hpp"
-#include "classes/onepole.hpp"
+#include "channelStrip.hpp"
+#include "volumeSlider.hpp"
+#include "onepole.hpp"
 
 #define NUM_CHANNELS 2
 #define NUM_CHANNEL_STRIPS 4
@@ -83,14 +83,12 @@ protected:
     // Init
 
     void initParameter(uint32_t index, Parameter& parameter) override;
-    void initProgramName(uint32_t index, String& programName) override;
 
     // -------------------------------------------------------------------
     // Internal data
 
     float getParameterValue(uint32_t index) const override;
     void  setParameterValue(uint32_t index, float value) override;
-    void  loadProgram(uint32_t index) override;
 
     // -------------------------------------------------------------------
     // Process

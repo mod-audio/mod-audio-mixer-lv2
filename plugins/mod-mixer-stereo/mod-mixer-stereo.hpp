@@ -2,9 +2,9 @@
 #define DISTRHO_PLUGIN_SLPLUGIN_HPP_INCLUDED
 
 #include "DistrhoPlugin.hpp"
-#include "classes/channelStrip.hpp"
-#include "classes/volumeSlider.hpp"
-#include "classes/onepole.hpp"
+#include "channelStrip.hpp"
+#include "volumeSlider.hpp"
+#include "onepole.hpp"
 
 #define NUM_CHANNELS 2
 #define NUM_CHANNEL_STRIPS 8

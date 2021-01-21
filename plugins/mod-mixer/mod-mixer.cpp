@@ -6,10 +6,8 @@ START_NAMESPACE_DISTRHO
 // -----------------------------------------------------------------------
 
 Mixer::Mixer()
-    : Plugin(paramCount, 1, 0) // 1 program, 0 states
+    : Plugin(paramCount, 0, 0) // 1 program, 0 states
 {
-    loadProgram(0);
-
     pluginEnabled = true;
     sampleRate = (float)getSampleRate();
 
@@ -236,14 +234,6 @@ void Mixer::initParameter(uint32_t index, Parameter& parameter)
     }
 }
 
-void Mixer::initProgramName(uint32_t index, String& programName)
-{
-    if (index != 0)
-        return;
-
-    programName = "Default";
-}
-
 // -----------------------------------------------------------------------
 // Internal data
 
@@ -350,10 +340,6 @@ void Mixer::setParameterValue(uint32_t index, float value)
             pluginEnabled = value;
             break;
     }
-}
-
-void Mixer::loadProgram(uint32_t index)
-{
 }
 
 void Mixer::reset()
