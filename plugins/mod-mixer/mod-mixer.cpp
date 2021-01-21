@@ -301,7 +301,7 @@ void Mixer::initParameter(uint32_t index, Parameter& parameter)
             parameter.ranges.max = 1.f;
             break;
         case paramPluginEnabled:
-            parameter.hints      = kParameterIsAutomable;
+            parameter.hints      = kParameterIsAutomable | kParameterIsBoolean;
             parameter.name       = "PluginEnabled";
             parameter.symbol     = "PluginEnabled";
             parameter.unit       = "";
@@ -541,10 +541,10 @@ void Mixer::run(const float** inputs, float** outputs, uint32_t frames)
     }
 
     //TODO this part if for testing, will need some improvements
-    postFader1Level = fabs((mixerChannel[0]->getSample(0) + mixerChannel[0]->getSample(1)) / 2.0);
-    postFader2Level = fabs((mixerChannel[1]->getSample(0) + mixerChannel[1]->getSample(1)) / 2.0);
-    postFader3Level = fabs((mixerChannel[2]->getSample(0) + mixerChannel[2]->getSample(1)) / 2.0);
-    postFader4Level = fabs((mixerChannel[3]->getSample(0) + mixerChannel[3]->getSample(1)) / 2.0);
+    postFader1Level = fabs((mixerChannel[0]->getSample(0) + mixerChannel[1]->getSample(1)) / 2.0);
+    postFader2Level = fabs((mixerChannel[2]->getSample(0) + mixerChannel[3]->getSample(1)) / 2.0);
+    postFader3Level = fabs((mixerChannel[4]->getSample(0) + mixerChannel[5]->getSample(1)) / 2.0);
+    postFader4Level = fabs((mixerChannel[5]->getSample(0) + mixerChannel[6]->getSample(1)) / 2.0);
 
     masterMonitorLevel = fabs((outputs[0][0] + outputs[1][0]) / 2.0);
     altMonitorLevel = fabs((outputs[2][0] + outputs[3][0]) / 2.0);
