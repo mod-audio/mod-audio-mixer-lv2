@@ -1,5 +1,4 @@
 #include "mod-mixer-stereo.hpp"
-#include <iostream>
 
 START_NAMESPACE_DISTRHO
 
@@ -427,7 +426,6 @@ void Mixer::run(const float** inputs, float** outputs, uint32_t frames)
             prevPanningParam[paramIndex] = panningParam[paramIndex];
         }
         if (muteParam[paramIndex] != prevMuteParam[paramIndex]) {
-            std::cout << "mixerChannels: " << c << "and " << c+1 << " " << "are set to: " << muteParam[paramIndex] << std::endl;
             mixerChannel[c]->setMute(muteParam[paramIndex]);
             mixerChannel[c+1]->setMute(muteParam[paramIndex]);
             prevMuteParam[paramIndex] = muteParam[paramIndex];
