@@ -56,6 +56,7 @@ clean:
 	$(MAKE) clean -C dpf/utils/lv2-ttl-generator
 	$(MAKE) clean -C plugins/$(MIXER_MONO)
 	$(MAKE) clean -C plugins/$(MIXER_STEREO)
+	rm classes/*.o classes/*.d
 	rm -rf bin build
 
 # --------------------------------------------------------------

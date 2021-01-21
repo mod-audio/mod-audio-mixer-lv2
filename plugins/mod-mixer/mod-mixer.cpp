@@ -11,9 +11,24 @@ Mixer::Mixer()
     pluginEnabled = true;
     sampleRate = (float)getSampleRate();
 
+    postFader1Level = 0.0;
+    postFader2Level = 0.0;
+    postFader3Level = 0.0;
+    postFader4Level = 0.0;
+    masterMonitorLevel = 0.0;
+    altMonitorLevel = 0.0;
+
+    volumeCoef = 0.0;
+    altCoef = 0.0;
+
     masterVolume = 0.5;
     masterSlider.setCoef(masterVolume);
-    onepole.setFc(10.0/48000.0);
+
+    altVolume = 0.5;
+    altSlider.setCoef(altVolume);
+
+    onepole1.setFc(10.0/48000.0);
+    onepole2.setFc(10.0/48000.0);
 
     mixerChannel = new ChannelStrip*[NUM_CHANNEL_STRIPS];
 
@@ -222,6 +237,69 @@ void Mixer::initParameter(uint32_t index, Parameter& parameter)
             parameter.ranges.min = 0.0f;
             parameter.ranges.max = 1.f;
             break;
+        case paramAltVolume:
+            parameter.hints      = kParameterIsAutomable;
+            parameter.name       = "Alt Volume";
+            parameter.symbol     = "AltVolume";
+            parameter.unit       = "";
+            parameter.ranges.def = 0.0f;
+            parameter.ranges.min = 0.0f;
+            parameter.ranges.max = 1.f;
+            break;
+        case paramPostFader1Level:
+            parameter.hints      = kParameterIsOutput;
+            parameter.name       = "PostFader1Level";
+            parameter.symbol     = "PostFader1Level";
+            parameter.unit       = "";
+            parameter.ranges.def = 0.0f;
+            parameter.ranges.min = 0.0f;
+            parameter.ranges.max = 1.f;
+            break;
+        case paramPostFader2Level:
+            parameter.hints      = kParameterIsOutput;
+            parameter.name       = "PostFader2Level";
+            parameter.symbol     = "PostFader2Level";
+            parameter.unit       = "";
+            parameter.ranges.def = 0.0f;
+            parameter.ranges.min = 0.0f;
+            parameter.ranges.max = 1.f;
+            break;
+        case paramPostFader3Level:
+            parameter.hints      = kParameterIsOutput;
+            parameter.name       = "PostFader3Level";
+            parameter.symbol     = "PostFader3Level";
+            parameter.unit       = "";
+            parameter.ranges.def = 0.0f;
+            parameter.ranges.min = 0.0f;
+            parameter.ranges.max = 1.f;
+            break;
+        case paramPostFader4Level:
+            parameter.hints      = kParameterIsOutput;
+            parameter.name       = "PostFader4Level";
+            parameter.symbol     = "PostFader4Level";
+            parameter.unit       = "";
+            parameter.ranges.def = 0.0f;
+            parameter.ranges.min = 0.0f;
+            parameter.ranges.max = 1.f;
+            break;
+        case paramMasterMonitorLevel:
+            parameter.hints      = kParameterIsOutput;
+            parameter.name       = "MasterMonitorLevel";
+            parameter.symbol     = "MasterMonitorLevel";
+            parameter.unit       = "";
+            parameter.ranges.def = 0.0f;
+            parameter.ranges.min = 0.0f;
+            parameter.ranges.max = 1.f;
+            break;
+        case paramAltMonitorLevel:
+            parameter.hints      = kParameterIsOutput;
+            parameter.name       = "AltMonitorLevel";
+            parameter.symbol     = "AltMonitorLevel";
+            parameter.unit       = "";
+            parameter.ranges.def = 0.0f;
+            parameter.ranges.min = 0.0f;
+            parameter.ranges.max = 1.f;
+            break;
         case paramPluginEnabled:
             parameter.hints      = kParameterIsAutomable;
             parameter.name       = "PluginEnabled";
@@ -275,6 +353,20 @@ float Mixer::getParameterValue(uint32_t index) const
             return muteParam[3];
         case paramMasterVolume:
             return masterVolume;
+        case paramAltVolume:
+            return altVolume;
+        case paramPostFader1Level:
+            return postFader1Level;
+        case paramPostFader2Level:
+            return postFader2Level;
+        case paramPostFader3Level:
+            return postFader3Level;
+        case paramPostFader4Level:
+            return postFader4Level;
+        case paramMasterMonitorLevel:
+            return masterMonitorLevel;
+        case paramAltMonitorLevel:
+            return altMonitorLevel;
         case paramPluginEnabled:
             return pluginEnabled;
     }
@@ -336,6 +428,10 @@ void Mixer::setParameterValue(uint32_t index, float value)
             masterVolume = value;
             masterSlider.setCoef(masterVolume);
             break;
+        case paramAltVolume:
+            altVolume = value;
+            altSlider.setCoef(altVolume);
+            break;
         case paramPluginEnabled:
             pluginEnabled = value;
             break;
@@ -388,24 +484,32 @@ void Mixer::run(const float** inputs, float** outputs, uint32_t frames)
 {
     channelHandler();
 
+    for (unsigned c = 0; c < NUM_CHANNEL_STRIPS; c++)
+    {
+        if (volumeParam[c] != prevVolumeParam[c]) {
+            mixerChannel[c]->setVolume(volumeParam[c]);
+            prevVolumeParam[c] = volumeParam[c];
+        }
+        if (panningParam[c] != prevPanningParam[c]) {
+            mixerChannel[c]->setPanning(((panningParam[c] * 0.5) + 0.5) * 90.0);
+            prevPanningParam[c] = panningParam[c];
+        }
+        if (muteParam[c] != prevMuteParam[c]) {
+            mixerChannel[c]->setMute(muteParam[c]);
+            prevMuteParam[c] = muteParam[c];
+        }
+    }
+
+    setParameterValue(paramPostFader1Level, 1.0);
+    setParameterValue(paramPostFader2Level, 0.2);
+    setParameterValue(paramPostFader3Level, 0.3);
+    setParameterValue(paramPostFader4Level, 0.4);
+
     // Main processing body
     for (uint32_t f = 0; f < frames; ++f)
     {
         for (unsigned c = 0; c < NUM_CHANNEL_STRIPS; c++)
         {
-            if (volumeParam[c] != prevVolumeParam[c]) {
-                mixerChannel[c]->setVolume(volumeParam[c]);
-                prevVolumeParam[c] = volumeParam[c];
-            }
-            if (panningParam[c] != prevPanningParam[c]) {
-                mixerChannel[c]->setPanning(((panningParam[c] * 0.5) + 0.5) * 90.0);
-                prevPanningParam[c] = panningParam[c];
-            }
-            if (muteParam[c] != prevMuteParam[c]) {
-                mixerChannel[c]->setMute(muteParam[c]);
-                prevMuteParam[c] = muteParam[c];
-            }
-
             mixerChannel[c]->process(inputs[c][f]);
 
             sampleL += mixerChannel[c]->getSample(0);
@@ -414,19 +518,36 @@ void Mixer::run(const float** inputs, float** outputs, uint32_t frames)
             sampleAltR += mixerChannel[c]->getSample(3);
         }
 
-        float volumeCoef = (pluginEnabled) ? masterSlider.getCoef() : 0.0;
-        float masterGain = onepole.process(volumeCoef);
+        if (pluginEnabled) {
+            volumeCoef = masterSlider.getCoef();
+            altCoef = altSlider.getCoef();
+        } else {
+            volumeCoef = 0.0;
+            altCoef = 0.0;
+        }
+
+        float masterGain = onepole1.process(volumeCoef);
+        float altGain = onepole2.process(altCoef);
 
         outputs[0][f] = masterGain * sampleL;
         outputs[1][f] = masterGain * sampleR;
-        outputs[2][f] = masterGain * sampleAltL;
-        outputs[3][f] = masterGain * sampleAltR;
+        outputs[2][f] = altGain * sampleAltL;
+        outputs[3][f] = altGain * sampleAltR;
 
         sampleL = 0.0;
         sampleR = 0.0;
         sampleAltL = 0.0;
         sampleAltR = 0.0;
     }
+
+    //TODO this part if for testing, will need some improvements
+    postFader1Level = fabs((mixerChannel[0]->getSample(0) + mixerChannel[0]->getSample(1)) / 2.0);
+    postFader2Level = fabs((mixerChannel[1]->getSample(0) + mixerChannel[1]->getSample(1)) / 2.0);
+    postFader3Level = fabs((mixerChannel[2]->getSample(0) + mixerChannel[2]->getSample(1)) / 2.0);
+    postFader4Level = fabs((mixerChannel[3]->getSample(0) + mixerChannel[3]->getSample(1)) / 2.0);
+
+    masterMonitorLevel = fabs((outputs[0][0] + outputs[1][0]) / 2.0);
+    altMonitorLevel = fabs((outputs[2][0] + outputs[3][0]) / 2.0);
 }
 
 

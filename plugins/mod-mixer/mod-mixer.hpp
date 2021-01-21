@@ -33,7 +33,14 @@ public:
         paramSolo4,
         paramMute4,
         paramMasterVolume,
+        paramAltVolume,
         paramPluginEnabled,
+        paramPostFader1Level,
+        paramPostFader2Level,
+        paramPostFader3Level,
+        paramPostFader4Level,
+        paramMasterMonitorLevel,
+        paramAltMonitorLevel,
         paramCount
     };
 
@@ -102,7 +109,9 @@ private:
 
     ChannelStrip **mixerChannel;
     VolumeSlider masterSlider;
-    OnePole      onepole;
+    VolumeSlider altSlider;
+    OnePole      onepole1;
+    OnePole      onepole2;
 
     float muteParam[NUM_CHANNEL_STRIPS];
     float soloParam[NUM_CHANNEL_STRIPS];
@@ -118,7 +127,20 @@ private:
     float sampleAltL;
     float sampleAltR;
     float masterVolume;
+    float altVolume;
     bool pluginEnabled;
+
+    float postFader1Level;
+    float postFader2Level;
+    float postFader3Level;
+    float postFader4Level;
+    float masterMonitorLevel;
+    float altMonitorLevel;
+
+    float volumeCoef = 0.0;
+    float altCoef = 0.0;
+
+    float monitorLevelOut[NUM_CHANNEL_STRIPS];
 
     int sampleRateReductionFactor;
 
