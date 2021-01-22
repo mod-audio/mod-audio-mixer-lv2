@@ -10,21 +10,22 @@ public:
     ChannelStrip(int reduction);
     ~ChannelStrip();
     void setVolume(float level);
-    void setMute(float level);
+    void setMute(bool level);
+    void setAlt(bool level);
     void setPanning(float level);
+    bool getMute();
+    bool getAltChannel();
     float getSample(int channel);
     void process(float input);
 private:
     float samples[4] = {0.0, 0.0, 0.0, 0.0};
-    float sample_channel;
     float gain;
-    float alt_gain;
-    float smooth_gain = 0.0;
-    float volume_level;
-    float mute_level;
-    float prev_mute_level = 0.0;
-    float panning_level;
-    int sampleRateReductionFactor = 8;
+    float altGain;
+    float smoothGain = 0.0;
+    float volumeLevel;
+    float panningLevel;
+    bool mute;
+    bool altChannel;
 
     VolumeSlider volumeSlider;
     Panning panner;
