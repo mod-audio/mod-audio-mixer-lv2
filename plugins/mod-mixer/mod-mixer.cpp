@@ -33,6 +33,7 @@ Mixer::Mixer()
     onepole2.setFc(10.0/48000.0);
 
     mixerChannel = new ChannelStrip*[NUM_CHANNEL_STRIPS];
+    levelMeter   = new LevelMeter*[NUM_CHANNEL_STRIPS];
 
     sampleRateReductionFactor = 1;
 
@@ -42,6 +43,7 @@ Mixer::Mixer()
         soloParam[i] = 0.0;
         muteParam[i] = 0.0;
         mixerChannel[i] = new ChannelStrip(sampleRateReductionFactor);
+        levelMeter[i]   = new LevelMeter();
         mixerChannel[i]->setVolume(0.5);
         mixerChannel[i]->setPanning(0.5 * 90.0);
         mixerChannel[i]->setMute(0.0);
@@ -604,10 +606,10 @@ void Mixer::run(const float** inputs, float** outputs, uint32_t frames)
         sampleAltR = 0.0;
     }
 
-    postFader1Level = monitoredFrame[0];
-    postFader2Level = monitoredFrame[1];
-    postFader3Level = monitoredFrame[2];
-    postFader4Level = monitoredFrame[3];
+    postFader1Level = levelMeter[0]->process(outputs[0], frames);
+    postFader2Level = levelMeter[1]->process(outputs[1], frames);
+    postFader3Level = levelMeter[2]->process(outputs[2], frames);
+    postFader4Level = levelMeter[3]->process(outputs[3], frames);
 
     masterMonitorLevel = monitoredFrame[4];
     altMonitorLevel = monitoredFrame[5];
