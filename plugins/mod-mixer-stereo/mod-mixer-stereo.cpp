@@ -32,6 +32,7 @@ Mixer::Mixer()
     onepole2.setFc(10.0/48000.0);
 
     mixerChannel = new ChannelStrip*[NUM_CHANNEL_STRIPS];
+    levelMeter   = new LevelMeter*[(NUM_CHANNEL_STRIPS/2) + 2];
 
     sampleRateReductionFactor = 1;
 
@@ -45,33 +46,40 @@ Mixer::Mixer()
         mixerChannel[i]->setPanning(0.5 * 90.0);
         mixerChannel[i]->setMute(false);
         mixerChannel[i]->setAlt(false);
+
+        volumeParam[i] = 0.5;
+        prevVolumeParam[i] = 0.5;
+        panningParam[i] = 0.0;
+        prevPanningParam[i] = 0.0;
+        muteParam[i] = false;
+        prevMuteParam[i] = false;
+        altParam[i]  = false;
+        prevAltParam[i]  = false;
+        soloParam[i] = false;
+        prevSoloParam[i] = false;
+    }
+
+    for (unsigned i = 0; i < NUM_CHANNEL_STRIPS/2; i++) {
+        volumeParam[i] = 0.5;
+        prevVolumeParam[i] = 0.5;
+        panningParam[i] = 0.0;
+        prevPanningParam[i] = 0.0;
+        muteParam[i] = false;
+        prevMuteParam[i] = false;
+        altParam[i]  = false;
+        prevAltParam[i]  = false;
+        soloParam[i] = false;
+        prevSoloParam[i] = false;
+    }
+
+    for (unsigned i = 0; i < (NUM_CHANNEL_STRIPS / 2) + 2; i++) {
+        levelMeter[i] = new LevelMeter();
     }
 
     sampleL = 0.0;
     sampleR = 0.0;
     sampleAltL = 0.0;
     sampleAltR = 0.0;
-
-    prevMuteParam[0] = 0.0;
-    prevMuteParam[1] = 0.0;
-    prevMuteParam[2] = 0.0;
-    prevMuteParam[3] = 0.0;
-    prevAltParam[0] = 0.0;
-    prevAltParam[1] = 0.0;
-    prevAltParam[2] = 0.0;
-    prevAltParam[3] = 0.0;
-    prevSoloParam[0] = 0.0;
-    prevSoloParam[1] = 0.0;
-    prevSoloParam[2] = 0.0;
-    prevSoloParam[3] = 0.0;
-    prevVolumeParam[0] = 0.5;
-    prevVolumeParam[1] = 0.5;
-    prevVolumeParam[2] = 0.5;
-    prevVolumeParam[3] = 0.5;
-    prevPanningParam[0] = 0.0;
-    prevPanningParam[1] = 0.0;
-    prevPanningParam[2] = 0.0;
-    prevPanningParam[3] = 0.0;
 
     reset();
 }
@@ -80,6 +88,8 @@ Mixer::~Mixer()
 {
     delete[] mixerChannel;
     mixerChannel = nullptr;
+    delete[] levelMeter;
+    levelMeter = nullptr;
 }
 
 // -----------------------------------------------------------------------
@@ -566,6 +576,8 @@ void Mixer::run(const float** inputs, float** outputs, uint32_t frames)
 {
     channelHandler();
 
+    float monitoredFrame[NUM_CHANNEL_STRIPS + 2][frames];
+
     int paramIndex = 0;
 
     for (unsigned c = 0; c < NUM_CHANNEL_STRIPS; c+=NUM_CHANNELS)
@@ -602,6 +614,9 @@ void Mixer::run(const float** inputs, float** outputs, uint32_t frames)
         {
             mixerChannel[c]->process(inputs[c][f]);
 
+            monitoredFrame[c][f] = (mixerChannel[c]->getSample(0) + mixerChannel[c]->getSample(1)) / 2.0;
+            monitoredFrame[c][f] += (mixerChannel[c]->getSample(2) + mixerChannel[c]->getSample(3)) / 2.0;
+
             if (truePanning) {
                 sampleL += mixerChannel[c]->getSample(0);
                 sampleR += mixerChannel[c]->getSample(1);
@@ -634,6 +649,9 @@ void Mixer::run(const float** inputs, float** outputs, uint32_t frames)
         float masterGain = onepole1.process(volumeCoef);
         float altGain = onepole2.process(altCoef);
 
+        monitoredFrame[8][f] = masterGain * (sampleL + sampleR) / 2.0;
+        monitoredFrame[9][f] = altGain * (sampleAltL + sampleAltR) / 2.0;
+
         outputs[0][f] = masterGain * sampleL;
         outputs[1][f] = masterGain * sampleR;
         outputs[2][f] = altGain * sampleAltL;
@@ -645,14 +663,13 @@ void Mixer::run(const float** inputs, float** outputs, uint32_t frames)
         sampleAltR = 0.0;
     }
 
-    //TODO this part if for testing, will need some improvements
-    postFader1Level = fabs((mixerChannel[0]->getSample(0) + mixerChannel[0]->getSample(1)) / 2.0);
-    postFader2Level = fabs((mixerChannel[1]->getSample(0) + mixerChannel[1]->getSample(1)) / 2.0);
-    postFader3Level = fabs((mixerChannel[2]->getSample(0) + mixerChannel[2]->getSample(1)) / 2.0);
-    postFader4Level = fabs((mixerChannel[3]->getSample(0) + mixerChannel[3]->getSample(1)) / 2.0);
+    postFader1Level = levelMeter[0]->stereoProcess(monitoredFrame[0], monitoredFrame[1], frames);
+    postFader2Level = levelMeter[1]->stereoProcess(monitoredFrame[2], monitoredFrame[3], frames);
+    postFader3Level = levelMeter[2]->stereoProcess(monitoredFrame[4], monitoredFrame[5], frames);
+    postFader4Level = levelMeter[3]->stereoProcess(monitoredFrame[6], monitoredFrame[7], frames);
 
-    masterMonitorLevel = fabs((outputs[0][0] + outputs[1][0]) / 2.0);
-    altMonitorLevel = fabs((outputs[2][0] + outputs[3][0]) / 2.0);
+    masterMonitorLevel = levelMeter[4]->process(monitoredFrame[8], frames);
+    altMonitorLevel    = levelMeter[5]->process(monitoredFrame[9], frames);
 }
 
 

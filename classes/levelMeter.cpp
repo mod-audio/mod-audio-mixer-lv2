@@ -105,3 +105,23 @@ float LevelMeter::process(float *input, uint32_t n_samples)
 
     return levelOut;
 }
+
+float LevelMeter::stereoProcess(float *inputL, float *inputR, uint32_t n_samples)
+{
+	float l = meterLevel + 1e-20f;
+
+	l *= falloff;
+
+	// branches inside loop
+	for (uint32_t i = 0; i < n_samples; ++i) {
+		const float a = fast_fabsf ((inputL[i] + inputR[i])/2.0);
+		if (a > l) { l = a; }
+	}
+
+	if (!isfinite (l)) l = 0;
+	meterLevel = l;
+
+	post();
+
+    return levelOut;
+}

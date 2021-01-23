@@ -74,6 +74,8 @@ Mixer::~Mixer()
 {
     delete[] mixerChannel;
     mixerChannel = nullptr;
+    delete[] levelMeter;
+    levelMeter = nullptr;
 }
 
 // -----------------------------------------------------------------------

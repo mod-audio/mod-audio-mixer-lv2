@@ -19,6 +19,7 @@ FILES_DSP  = \
 	../../classes/panning.cpp \
 	../../classes/volumeSlider.cpp \
 	../../classes/channelStrip.cpp \
+	../../classes/levelMeter.cpp \
 
 # --------------------------------------------------------------
 # Do some magic

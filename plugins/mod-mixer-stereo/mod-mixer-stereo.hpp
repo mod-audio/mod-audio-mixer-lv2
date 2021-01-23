@@ -5,6 +5,7 @@
 #include "channelStrip.hpp"
 #include "volumeSlider.hpp"
 #include "onepole.hpp"
+#include "levelMeter.hpp"
 
 #define NUM_CHANNELS 2
 #define NUM_CHANNEL_STRIPS 8
@@ -111,6 +112,7 @@ protected:
 private:
 
     ChannelStrip **mixerChannel;
+    LevelMeter   **levelMeter;
     VolumeSlider masterSlider;
     VolumeSlider altSlider;
     OnePole      onepole1;

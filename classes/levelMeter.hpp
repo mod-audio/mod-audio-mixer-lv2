@@ -12,6 +12,7 @@ public:
     void pre(uint32_t n_samples);
     void post();
     float process(float *input, uint32_t n_samples);
+    float stereoProcess(float *inputL, float *inputR, uint32_t n_samples);
 
 private:
     float sampleRate;
