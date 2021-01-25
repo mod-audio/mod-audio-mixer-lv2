@@ -49,7 +49,10 @@ install:
 	install -d $(DESTDIR)$(libdir)/lv2/$(MIXER_STEREO).lv2
 
 	install -m 644 bin/$(MIXER_MONO).lv2/*.so  $(DESTDIR)$(libdir)/lv2/$(MIXER_MONO).lv2/
+	install -m 644 bin/$(MIXER_MONO).lv2/*.ttl $(DESTDIR)$(libdir)/lv2/$(MIXER_MONO).lv2/
+	install -m 644 bin/$(MIXER_STEREO).lv2/*.so  $(DESTDIR)$(libdir)/lv2/$(MIXER_STEREO).lv2/
 	install -m 644 bin/$(MIXER_STEREO).lv2/*.ttl $(DESTDIR)$(libdir)/lv2/$(MIXER_STEREO).lv2/
+
 
 clean:
 	#$(MAKE) clean -C dpf/dgl
