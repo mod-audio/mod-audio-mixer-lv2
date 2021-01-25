@@ -1,9 +1,5 @@
 #include "panning.hpp"
 
-#define PI 3.14159265
-#define PI_OVER_TWO 1.570796325
-#define PI_OVER_HUNDREDEIGHTY 0.017453292500000002
-
 Panning::Panning()
 {
     samples[0] = 0.0;
@@ -27,8 +23,8 @@ float Panning::calcSin(float angle)
 
 void Panning::calcPanning(float angle)
 {
-    left = calcSin(angle*PI_OVER_HUNDREDEIGHTY + PI_OVER_TWO);
-    right = calcSin(angle*PI_OVER_HUNDREDEIGHTY);
+    left = calcSin((angle * (M_PI/180.0)) + (M_PI/2.0));
+    right = calcSin(angle* (M_PI/180.0));
 }
 
 void Panning::process(float sample)

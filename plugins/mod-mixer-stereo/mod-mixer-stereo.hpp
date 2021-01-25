@@ -150,8 +150,6 @@ private:
 
     float monitorLevelOut[NUM_CHANNEL_STRIPS];
 
-    int sampleRateReductionFactor;
-
     void reset();
 
     DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Mixer)

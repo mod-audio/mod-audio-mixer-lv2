@@ -7,7 +7,7 @@
 
 class ChannelStrip {
 public:
-    ChannelStrip(int reduction);
+    ChannelStrip();
     ~ChannelStrip();
     void setVolume(float level);
     void setMute(bool level);

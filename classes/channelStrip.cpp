@@ -1,6 +1,6 @@
 #include "channelStrip.hpp"
 
-ChannelStrip::ChannelStrip(int reduction)
+ChannelStrip::ChannelStrip()
 {
     gain = 0.0;
     altGain = 0.0;
@@ -10,8 +10,8 @@ ChannelStrip::ChannelStrip(int reduction)
     mute = false;
     altChannel = false;
 
-    onepole1.setFc(10.0/(48000.0/(float)reduction));
-    onepole2.setFc(10.0/(48000.0/(float)reduction));
+    onepole1.setFc(10.0/48000.0);
+    onepole2.setFc(10.0/48000.0);
 }
 
 ChannelStrip::~ChannelStrip()
@@ -62,7 +62,7 @@ void ChannelStrip::process(float input)
 
     float gain = (mute || altChannel) ? 0.0 :volumeSlider.getCoef();
 
-    if (altChannel) {
+    if (altChannel && !mute) {
         altGain = (altGain < volumeSlider.getCoef()) ? altGain + 0.001 : volumeSlider.getCoef();
     } else {
         altGain = (altGain > 0.0) ? altGain - 0.001 : 0.0;

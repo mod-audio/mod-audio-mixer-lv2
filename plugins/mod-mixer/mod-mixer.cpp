@@ -35,14 +35,12 @@ Mixer::Mixer()
     mixerChannel = new ChannelStrip*[NUM_CHANNEL_STRIPS];
     levelMeter   = new LevelMeter*[NUM_CHANNEL_STRIPS + 2];
 
-    sampleRateReductionFactor = 1;
-
     for (unsigned i = 0; i < NUM_CHANNEL_STRIPS; i++) {
         volumeParam[i] = 0.5;
         panningParam[i] = 0.0;
         soloParam[i] = 0.0;
         muteParam[i] = 0.0;
-        mixerChannel[i] = new ChannelStrip(sampleRateReductionFactor);
+        mixerChannel[i] = new ChannelStrip();
         mixerChannel[i]->setVolume(0.5);
         mixerChannel[i]->setPanning(0.5 * 90.0);
         mixerChannel[i]->setMute(0.0);
@@ -546,7 +544,8 @@ void Mixer::run(const float** inputs, float** outputs, uint32_t frames)
             prevVolumeParam[c] = volumeParam[c];
         }
         if (panningParam[c] != prevPanningParam[c]) {
-            mixerChannel[c]->setPanning(((panningParam[c] * 0.5) + 0.5) * 90.0);
+            float panningValue = (panningParam[c] > 0.0) ? panningParam[c] * 1.009 : panningParam[c];
+            mixerChannel[c]->setPanning(((panningValue * 0.5) + 0.5) * 90.0);
             prevPanningParam[c] = panningParam[c];
         }
         if (muteParam[c] != prevMuteParam[c]) {
