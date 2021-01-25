@@ -40,6 +40,16 @@ void ChannelStrip::setPanning(float panningLevel)
     panner.setAngle(onepole2.process(panningLevel));
 }
 
+float ChannelStrip::getVolume()
+{
+    return volumeLevel;
+}
+
+float ChannelStrip::getPanning()
+{
+    return panningLevel;
+}
+
 bool ChannelStrip::getMute()
 {
     return mute;

@@ -9,14 +9,16 @@ class ChannelStrip {
 public:
     ChannelStrip();
     ~ChannelStrip();
-    void setVolume(float level);
-    void setMute(bool level);
-    void setAlt(bool level);
-    void setPanning(float level);
-    bool getMute();
-    bool getAltChannel();
+    void  setVolume(float level);
+    void  setMute(bool level);
+    void  setAlt(bool level);
+    void  setPanning(float level);
+    float getVolume();
+    float getPanning();
+    bool  getMute();
+    bool  getAltChannel();
     float getSample(int channel);
-    void process(float input);
+    void  process(float input);
 private:
     float samples[4] = {0.0, 0.0, 0.0, 0.0};
     float gain;

@@ -108,6 +108,7 @@ protected:
     void run(const float** inputs, float** outputs, uint32_t frames) override;
 
     void channelHandler();
+    void setPanning(int index, float panningParamValue);
 
 private:
 
@@ -119,15 +120,7 @@ private:
     OnePole      onepole2;
 
     bool  muteParam[NUM_CHANNEL_STRIPS];
-    bool  altParam[NUM_CHANNEL_STRIPS];
     float soloParam[NUM_CHANNEL_STRIPS];
-    float volumeParam[NUM_CHANNEL_STRIPS];
-    float panningParam[NUM_CHANNEL_STRIPS];
-    float prevMuteParam[NUM_CHANNEL_STRIPS];
-    float prevAltParam[NUM_CHANNEL_STRIPS];
-    float prevSoloParam[NUM_CHANNEL_STRIPS];
-    float prevVolumeParam[NUM_CHANNEL_STRIPS];
-    float prevPanningParam[NUM_CHANNEL_STRIPS];
     float sampleRate;
     float sampleL;
     float sampleR;
