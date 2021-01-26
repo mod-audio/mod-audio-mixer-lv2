@@ -22,6 +22,11 @@ LevelMeter::LevelMeter()
 {
     rate = 48000;
     level = 0.0;
+    meterLevel = 0.0;
+    dbLvl = 0.0;
+    levelOut = 0.0;
+    spp = 0.0;
+    falloff = 0.0;
     pre(128);
 }
 
