@@ -58,8 +58,15 @@ Mixer::Mixer()
 
 Mixer::~Mixer()
 {
+    for (unsigned i = 0; i < NUM_CHANNEL_STRIPS; i++) {
+        delete mixerChannel[i];
+    }
     delete[] mixerChannel;
     mixerChannel = nullptr;
+
+    for (unsigned i = 0; i < NUM_CHANNEL_STRIPS + 2; i++) {
+        delete levelMeter[i];
+    }
     delete[] levelMeter;
     levelMeter = nullptr;
 }
