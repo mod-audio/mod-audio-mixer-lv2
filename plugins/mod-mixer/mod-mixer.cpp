@@ -416,7 +416,6 @@ void Mixer::setParameterValue(uint32_t index, float value)
     {
         case paramVolume1:
             mixerChannel[0]->setVolume(value);
-            mixerChannel[1]->setVolume(value);
             break;
         case paramPanning1:
             setPanning(0, value);
@@ -428,12 +427,10 @@ void Mixer::setParameterValue(uint32_t index, float value)
         case paramMute1:
             muteParam[0] = value;
             mixerChannel[0]->setMute(static_cast<bool>(value));
-            mixerChannel[1]->setMute(static_cast<bool>(value));
             channelHandler();
             break;
         case paramAlt1:
             mixerChannel[0]->setAlt(static_cast<bool>(value));
-            mixerChannel[1]->setAlt(static_cast<bool>(value));
             channelHandler();
             break;
         case paramVolume2:
