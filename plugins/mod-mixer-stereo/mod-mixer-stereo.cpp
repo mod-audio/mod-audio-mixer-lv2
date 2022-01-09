@@ -247,7 +247,7 @@ void Mixer::initParameter(uint32_t index, Parameter& parameter)
             parameter.ranges.max = 1.f;
             break;
         case paramMute4:
-            parameter.hints      = kParameterIsAutomable;
+            parameter.hints      = kParameterIsAutomable | kParameterIsBoolean;
             parameter.name       = "Mute4";
             parameter.symbol     = "Mute4";
             parameter.unit       = "";
