@@ -37,6 +37,7 @@ LevelMeter::~LevelMeter()
 void LevelMeter::setSampleRate(float rate)
 {
     this->rate = rate;
+    spp = 0.0; // force falloff recompute on the next block
 }
 
 float fast_fabsf (float val)
@@ -93,6 +94,8 @@ void LevelMeter::post()
 
 float LevelMeter::process(float *input, uint32_t n_samples)
 {
+	pre(n_samples);
+
 	float l = meterLevel + 1e-20f;
 
 	l *= falloff;
@@ -113,6 +116,8 @@ float LevelMeter::process(float *input, uint32_t n_samples)
 
 float LevelMeter::stereoProcess(float *inputL, float *inputR, uint32_t n_samples)
 {
+	pre(n_samples);
+
 	float l = meterLevel + 1e-20f;
 
 	l *= falloff;

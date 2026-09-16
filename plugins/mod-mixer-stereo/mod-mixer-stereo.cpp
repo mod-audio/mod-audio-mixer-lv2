@@ -28,9 +28,6 @@ Mixer::Mixer()
     altVolume = 0.5;
     altSlider.setCoef(altVolume);
 
-    onepole1.setFc(10.0/48000.0);
-    onepole2.setFc(10.0/48000.0);
-
     mixerChannel = new ChannelStrip*[NUM_CHANNEL_STRIPS];
     levelMeter   = new LevelMeter*[(NUM_CHANNEL_STRIPS/2) + 2];
 
@@ -53,6 +50,8 @@ Mixer::Mixer()
     for (unsigned i = 0; i < (NUM_CHANNEL_STRIPS / 2) + 2; i++) {
         levelMeter[i] = new LevelMeter();
     }
+
+    applySampleRate(sampleRate);
 
     sampleL = 0.0;
     sampleR = 0.0;
@@ -542,6 +541,28 @@ void Mixer::reset()
 
 // -----------------------------------------------------------------------
 // Process
+
+void Mixer::applySampleRate(double newSampleRate)
+{
+    sampleRate = (float)newSampleRate;
+
+    // 10 Hz smoothing of the master and alt gains, independent of the host rate
+    onepole1.setFc(10.0/newSampleRate);
+    onepole2.setFc(10.0/newSampleRate);
+
+    for (unsigned i = 0; i < NUM_CHANNEL_STRIPS; i++) {
+        mixerChannel[i]->setSampleRate(newSampleRate);
+    }
+
+    for (unsigned i = 0; i < NUM_LEVEL_METERS; i++) {
+        levelMeter[i]->setSampleRate((float)newSampleRate);
+    }
+}
+
+void Mixer::sampleRateChanged(double newSampleRate)
+{
+    applySampleRate(newSampleRate);
+}
 
 void Mixer::activate()
 {
