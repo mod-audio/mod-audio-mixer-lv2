@@ -9,7 +9,6 @@ class ChannelStrip {
 public:
     ChannelStrip();
     ~ChannelStrip();
-    void  setSampleRate(double sampleRate);
     void  setVolume(float level);
     void  setMute(bool level);
     void  setAlt(bool level);

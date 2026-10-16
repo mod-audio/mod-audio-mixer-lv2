@@ -28,11 +28,14 @@ plugins:
 	$(MAKE) all -C plugins/$(MIXER_MONO)
 	$(MAKE) all -C plugins/$(MIXER_STEREO)
 
-ifneq ($(CROSS_COMPILING_DONT_CARE),true)
+ifneq ($(CROSS_COMPILING),true)
 gen: plugins dpf/utils/lv2_ttl_generator
 	#@$(CURDIR)/dpf/utils/generate-ttl.sh
 	cp plugins/$(MIXER_MONO)/lv2-data/* bin/$(MIXER_MONO).lv2/
 	cp plugins/$(MIXER_STEREO)/lv2-data/* bin/$(MIXER_STEREO).lv2/
+ifeq ($(MACOS),true)
+	@$(CURDIR)/dpf/utils/generate-vst-bundles.sh
+endif
 
 dpf/utils/lv2_ttl_generator:
 	$(MAKE) -C dpf/utils/lv2-ttl-generator
@@ -45,9 +48,9 @@ install:
 	install -d $(DESTDIR)$(libdir)/lv2/$(MIXER_MONO).lv2
 	install -d $(DESTDIR)$(libdir)/lv2/$(MIXER_STEREO).lv2
 
-	install -m 644 bin/$(MIXER_MONO).lv2/*$(LIB_EXT) $(DESTDIR)$(libdir)/lv2/$(MIXER_MONO).lv2/
+	install -m 644 bin/$(MIXER_MONO).lv2/*.so  $(DESTDIR)$(libdir)/lv2/$(MIXER_MONO).lv2/
 	install -m 644 bin/$(MIXER_MONO).lv2/*.ttl $(DESTDIR)$(libdir)/lv2/$(MIXER_MONO).lv2/
-	install -m 644 bin/$(MIXER_STEREO).lv2/*$(LIB_EXT) $(DESTDIR)$(libdir)/lv2/$(MIXER_STEREO).lv2/
+	install -m 644 bin/$(MIXER_STEREO).lv2/*.so  $(DESTDIR)$(libdir)/lv2/$(MIXER_STEREO).lv2/
 	install -m 644 bin/$(MIXER_STEREO).lv2/*.ttl $(DESTDIR)$(libdir)/lv2/$(MIXER_STEREO).lv2/
 
 
