@@ -354,6 +354,6 @@
         foaf:homepage <http://> ;
     ] ;
 
-    lv2:microVersion 2 ;
+    lv2:microVersion 0 ;
     lv2:minorVersion 2 .
 
