@@ -8,6 +8,7 @@
 #include "levelMeter.hpp"
 
 #define NUM_CHANNELS 2
+#define NUM_LEVEL_METERS ((NUM_CHANNEL_STRIPS / 2) + 2)
 #define NUM_CHANNEL_STRIPS 8
 
 START_NAMESPACE_DISTRHO
@@ -84,7 +85,7 @@ protected:
 
     uint32_t getVersion() const noexcept override
     {
-        return d_version(1, 0, 0);
+        return d_version(1, 2, 2);
     }
 
     int64_t getUniqueId() const noexcept override
@@ -106,6 +107,7 @@ protected:
     void activate() override;
     void deactivate() override;
     void run(const float** inputs, float** outputs, uint32_t frames) override;
+    void sampleRateChanged(double newSampleRate) override;
 
     void channelHandler();
     void setPanning(int index, float panningParamValue);
@@ -144,6 +146,8 @@ private:
     float monitorLevelOut[NUM_CHANNEL_STRIPS];
 
     void reset();
+
+    void applySampleRate(double newSampleRate);
 
     DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Mixer)
 };

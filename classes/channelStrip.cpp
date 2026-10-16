@@ -10,8 +10,14 @@ ChannelStrip::ChannelStrip()
     mute = false;
     altChannel = false;
 
-    onepole1.setFc(10.0/48000.0);
-    onepole2.setFc(10.0/48000.0);
+    setSampleRate(48000.0);
+}
+
+void ChannelStrip::setSampleRate(double sampleRate)
+{
+    // 10 Hz smoothing of gain and panning, independent of the host rate
+    onepole1.setFc(10.0/sampleRate);
+    onepole2.setFc(10.0/sampleRate);
 }
 
 ChannelStrip::~ChannelStrip()
